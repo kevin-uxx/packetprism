@@ -2,6 +2,20 @@
 
 A dependency-free, 100% client-side `.pcap` / `.pcapng` analyzer. Nothing is uploaded — files are parsed in the browser.
 
+![Packet list with decoded TLS Client Hello, key fields, header tree and hex view](docs/screenshots/packets.png)
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Landing page](docs/screenshots/landing.png) | ![Display filter showing resets and failed DNS lookups](docs/screenshots/filter-rst.png) |
+| **Landing** — drop a capture or load the built-in sample | **Display filters** — `tcp.flags.rst == 1 \|\| dns.flags.rcode > 0` |
+| ![Insights dashboard](docs/screenshots/insights.png) | ![Conversations table](docs/screenshots/conversations.png) |
+| **Insights** — protocol mix, timeline, top talkers, services, flags | **Conversations** — every TCP/UDP stream and host pair |
+
+![Follow TCP stream](docs/screenshots/follow-stream.png)
+*Follow TCP stream — the full HTTP request/response reassembled*
+
 ## Run
 
 Serve the folder over HTTP (some browsers block local scripts on `file://`):
@@ -12,7 +26,9 @@ python -m http.server 5173      # or: npx serve .
 ```
 
 Open http://localhost:5173 and click **Load sample capture**, or drop your own capture file.
-`http://localhost:5173/?sample` opens the demo capture directly.
+`http://localhost:5173/?sample` opens the demo capture directly. Deep-link options:
+`&filter=<expr>`, `&select=<packet no.>`, `&tab=insights|convs`, `&follow=1`
+(e.g. `/?sample&select=36` opens the TLS Client Hello).
 
 ## Features
 

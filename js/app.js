@@ -102,7 +102,7 @@
     try { await loadBuffer(await file.arrayBuffer(), file.name); }
     catch (e) { hideLoading(); toast(e.message, 'err'); }
   }
-  function loadSample() { const bytes = SampleCapture.build(); loadBuffer(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), 'sample-home-network.pcap'); }
+  function loadSample() { const bytes = SampleCapture.build(); return loadBuffer(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), 'sample-home-network.pcap'); }
   function download(data, name, type) {
     const url = URL.createObjectURL(new Blob([data], { type }));
     const a = Object.assign(document.createElement('a'), { href: url, download: name });
@@ -863,6 +863,15 @@
     else if (e.key === 'f' || e.key === 'F') { const r = S.recs[S.sel]; if (r && r.skind) openStream(r); }
   });
 
-  // deep-link: ?sample opens the demo directly
-  if (/[?&#]sample\b/.test(location.href)) loadSample();
+  // deep-links: ?sample opens the demo; optional &filter=…&select=N&tab=insights|convs&follow=1
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('sample')) {
+    loadSample().then(() => {
+      if (qs.get('filter')) { E.finput.value = qs.get('filter'); applyFilterText(qs.get('filter')); }
+      const n = +qs.get('select');
+      if (n && S.recs[n - 1]) select(n - 1, true);
+      if (qs.get('tab')) switchTab(qs.get('tab'));
+      if (qs.has('follow') && S.recs[S.sel]) openStream(S.recs[S.sel]);
+    });
+  }
 })();
